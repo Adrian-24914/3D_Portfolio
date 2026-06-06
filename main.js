@@ -7,12 +7,13 @@ const sizes ={
     height: window.innerHeight
 }
 
-const camera = new THREE.PerspectiveCamera( 75, sizes.width / sizes.height, 0.1, 1000 );
-
-
-
+const camera = new THREE.PerspectiveCamera( 
+    75, 
+    sizes.width / sizes.height, 
+    0.1, 1000 );
 const renderer = new THREE.WebGLRenderer( { canvas :canvas } );
 renderer.setSize( sizes.width, sizes.height );
+renderer.setPixelRatio( Math.min( window.devicePixelRatio, 2 ) );
 
 renderer.setAnimationLoop( animate );
 document.body.appendChild( renderer.domElement );
@@ -32,6 +33,7 @@ function onWindowResize() {
   camera.updateProjectionMatrix();
 
   renderer.setSize( sizes.width, sizes.height );
+  renderer.setPixelRatio( Math.min( window.devicePixelRatio, 2 ) );
 }
 
 window.addEventListener( 'resize', onWindowResize );
