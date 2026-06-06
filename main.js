@@ -9,7 +9,7 @@ const sizes ={
     height: window.innerHeight
 }
 
-const renderer = new THREE.WebGLRenderer( { canvas: canvas } );
+const renderer = new THREE.WebGLRenderer( { canvas: canvas, antialias: true } );
 renderer.setSize( sizes.width, sizes.height );
 renderer.setPixelRatio( Math.min( window.devicePixelRatio, 2 ) );
 
@@ -34,16 +34,14 @@ const camera = new THREE.PerspectiveCamera(
     0.1,
     1000
 );
-camera.position.z = 5;
+
+camera.position.x = -53;
+camera.position.y = 22;
+camera.position.z = 64;
 
 const controls = new OrbitControls( camera, canvas );
 controls.enableDamping = true;
 controls.update();
-
-const geometry = new THREE.BoxGeometry( 1, 1, 1 );
-const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-const cube = new THREE.Mesh( geometry, material );
-scene.add( cube );
 
 renderer.setAnimationLoop( animate );
 
@@ -60,12 +58,9 @@ function onWindowResize() {
 
 window.addEventListener( 'resize', onWindowResize );
 
-function animate( time ) {
-
-  cube.rotation.x = time / 2000;
-  cube.rotation.y = time / 1000;
-
-  controls.update();
-  renderer.render( scene, camera );
+function animate() {
+    
+    controls.update();
+    renderer.render( scene, camera );
 
 }
