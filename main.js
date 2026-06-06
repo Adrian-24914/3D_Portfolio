@@ -28,16 +28,18 @@ loader.load( './Portafolio.glb', function ( gltf ) {
 const light = new THREE.AmbientLight( 0x404040, 4 ); // soft white light
 scene.add( light );
 
-const camera = new THREE.PerspectiveCamera(
-    75,
-    sizes.width / sizes.height,
-    0.1,
-    1000
-);
+const aspect = sizes.width / sizes.height;
+const camera = new THREE.OrthographicCamera( 
+    -aspect *10,
+    aspect *10,
+    10,
+    -10,
+    1,
+    1000 );
 
-camera.position.x = -53;
-camera.position.y = 22;
-camera.position.z = 64;
+camera.position.x = -100;
+camera.position.y = 70;
+camera.position.z = 150;
 
 const controls = new OrbitControls( camera, canvas );
 controls.enableDamping = true;
@@ -49,7 +51,13 @@ function onWindowResize() {
   sizes.width = window.innerWidth;
   sizes.height = window.innerHeight;
 
-  camera.aspect = sizes.width / sizes.height;
+  // Recompute orthographic frustum so model proportions remain correct
+  const aspect = sizes.width / sizes.height;
+  const halfHeight = 50; // matches initial top/bottom of +/-50
+  camera.left = -aspect * halfHeight;
+  camera.right = aspect * halfHeight;
+  camera.top = halfHeight;
+  camera.bottom = -halfHeight;
   camera.updateProjectionMatrix();
 
   renderer.setSize( sizes.width, sizes.height );
@@ -59,7 +67,7 @@ function onWindowResize() {
 window.addEventListener( 'resize', onWindowResize );
 
 function animate() {
-    
+    console.log(camera.position);
     controls.update();
     renderer.render( scene, camera );
 
