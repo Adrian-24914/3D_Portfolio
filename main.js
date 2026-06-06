@@ -16,14 +16,17 @@ renderer.setPixelRatio( Math.min( window.devicePixelRatio, 2 ) );
 const loader = new GLTFLoader();
 
 loader.load( './Portafolio.glb', function ( gltf ) {
-
-  scene.add( gltf.scene );
+    console.log(gltf);
+    scene.add( gltf.scene );
 
 }, undefined, function ( error ) {
 
   console.error( error );
 
 } );
+
+const light = new THREE.AmbientLight( 0x404040, 4 ); // soft white light
+scene.add( light );
 
 const camera = new THREE.PerspectiveCamera(
     75,
