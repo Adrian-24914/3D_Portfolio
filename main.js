@@ -18,6 +18,43 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.toneMapping = THREE.CineonToneMapping;
 renderer.toneMappingExposure = 1.2;
 
+const modalContent= {
+    "AboutMe": {
+        title: "About Me",
+        content: "I love weird / unique animes, like Dorohedoro (This site its based on it!). I also enjoy playing a diverse range of videogames, from yout typical shoters to more unique and artistic indie games. I really want to work in the gaming industry, at least have some personal proyects to publish and share with the world."
+    },
+    "Socials": {
+        title: "Socials",
+        content: "Github: Adrian-24914 \nLinkedIn: https://www.linkedin.com/in/adrian-penagos-b702bb3b3/ \nInstagram:adrian_2527_"
+    },
+    "Proyects": {
+        title: "Projects",
+        content: "You can check most of my projects on my GitHub! I have developed a REST API in Go and PostgreSQL, an Android task manager app with Kotlin and Jetpack Compose, and C++ projects focused on thread synchronization and performance analysis. I also work with React, TypeScript, and modern web technologies."
+    },
+    "Scene": { 
+        title: "Whoa, THAT'S ME!",
+        content: "My Name is Adrian, and I am a Computer Science student at the Univesidad del Valle de Guatemala. I am passionate about programming and game development, and I am eager to learn and grow in this field. I have experience with a variety of programming languages and technologies (explore this world to find out which ones!), and I am always looking for new challenges and opportunities to improve my skills."
+    }
+};
+
+const modal = document.querySelector(".modal");
+const modalTitle = document.querySelector(".modal-title");
+const modalProjectDescription = document.querySelector(".modal-project-desc");
+const modalExitButton = document.querySelector(".modal-exit");
+
+function showModal(id){
+    const content = modalContent[id];
+    if (content) {
+        modalTitle.textContent = content.title;
+        modalProjectDescription.textContent = content.content;
+        modal.classList.toggle("hidden");
+    }
+}
+
+function hideModal(){
+    modal.classList.add("hidden");
+}
+
 const loader = new GLTFLoader();
 
 let intersectObject = "";
@@ -114,6 +151,10 @@ function onWindowResize() {
 
 function onClick() {
     console.log(intersectObject);
+    if (intersectObject !== ""){
+        showModal(intersectObject);    
+    }
+    
 }
 
 function onPointerMove(event) {
@@ -121,6 +162,7 @@ function onPointerMove(event) {
     pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;   
 }
 
+modalExitButton.addEventListener("click", hideModal);
 window.addEventListener( 'resize', onWindowResize );
 window.addEventListener( 'click', onClick );
 window.addEventListener( 'pointermove', onPointerMove );
