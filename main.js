@@ -14,6 +14,8 @@ renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.CineonToneMapping;
+renderer.toneMappingExposure = 1.2;
 
 const loader = new GLTFLoader();
 
@@ -70,9 +72,9 @@ const camera = new THREE.OrthographicCamera(
     1000
 );
 
-camera.position.x = -100;
+camera.position.x = -125;
 camera.position.y = 70;
-camera.position.z = 150;
+camera.position.z = 130;
 
 const controls = new OrbitControls( camera, canvas );
 controls.enableDamping = true;
@@ -98,6 +100,7 @@ function onWindowResize() {
 window.addEventListener( 'resize', onWindowResize );
 
 function animate() {
+
     controls.update();
     renderer.render(scene, camera);
 }
