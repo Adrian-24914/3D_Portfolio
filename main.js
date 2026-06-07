@@ -26,6 +26,9 @@ const jumpConfig = {
 
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
+const moveRaycaster = new THREE.Raycaster();
+let collisionObjects = [];
+let cameraFollowOffset = new THREE.Vector3(-130, 0, 90);
 const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -96,6 +99,14 @@ const jumpingChars = [];
 const jumpingTimers = []; 
 let demonMesh = null; 
 
+function isDescendant(node, ancestor) {
+    while (node) {
+        if (node === ancestor) return true;
+        node = node.parent;
+    }
+    return false;
+}
+
 loader.load( './Portafolio.glb', function ( gltf ) {
     gltf.scene.traverse((child) => {
         if (intersectObjectsNames.includes(child.name)) {
@@ -118,14 +129,52 @@ loader.load( './Portafolio.glb', function ( gltf ) {
         if (child.name === "Demon") {
             demonMesh = child;
         }
-        //console.log(child);
+
+        if (child.isMesh && child.name !== "Caiman") {
+            collisionObjects.push(child);
+        }
     });
 
+    if (caiman.instance) {
+        collisionObjects = collisionObjects.filter((obj) => !isDescendant(obj, caiman.instance));
+    }
+
     scene.add( gltf.scene );
+    scene.updateMatrixWorld(true);
+
+    if (caiman.instance) {
+        cameraFollowOffset.x = camera.position.x - caiman.instance.position.x;
+        cameraFollowOffset.z = camera.position.z - caiman.instance.position.z;
+        controls.target.set(caiman.instance.position.x, 0, caiman.instance.position.z);
+    }
+
+    if (collisionObjects.length === 0) {
+        const boundaryMaterial = new THREE.MeshBasicMaterial({ visible: false });
+        const boundarySize = 140;
+        const boundaryHeight = 70;
+        const boundaryThickness = 4;
+
+        const boundaries = [
+            new THREE.Mesh(new THREE.BoxGeometry(boundaryThickness, boundaryHeight, boundarySize), boundaryMaterial),
+            new THREE.Mesh(new THREE.BoxGeometry(boundaryThickness, boundaryHeight, boundarySize), boundaryMaterial),
+            new THREE.Mesh(new THREE.BoxGeometry(boundarySize, boundaryHeight, boundaryThickness), boundaryMaterial),
+            new THREE.Mesh(new THREE.BoxGeometry(boundarySize, boundaryHeight, boundaryThickness), boundaryMaterial),
+        ];
+
+        boundaries[0].position.set(-boundarySize / 2, boundaryHeight / 2, 0);
+        boundaries[1].position.set(boundarySize / 2, boundaryHeight / 2, 0);
+        boundaries[2].position.set(0, boundaryHeight / 2, -boundarySize / 2);
+        boundaries[3].position.set(0, boundaryHeight / 2, boundarySize / 2);
+
+        boundaries.forEach((wall) => {
+            scene.add(wall);
+            collisionObjects.push(wall);
+        });
+    }
 
     jumpingChars.forEach((mesh) => {
-    applyRandomColor(mesh);
-    startJumpLoop(mesh);
+        applyRandomColor(mesh);
+        startJumpLoop(mesh);
     });
 
     if (demonMesh) startDemonJump(demonMesh);
@@ -138,7 +187,7 @@ loader.load( './Portafolio.glb', function ( gltf ) {
 
 const sun = new THREE.DirectionalLight(0xFFFFFF, 5);
 sun.castShadow = true;
-sun.position.set(50, 100, -75);
+sun.position.set(50, 100, 25);
 sun.shadow.mapSize.set(4096, 4096);
 sun.shadow.camera.left = -100;
 sun.shadow.camera.right = 100;
@@ -182,7 +231,7 @@ shadowPlane.position.y = 0;
 shadowPlane.receiveShadow = true;
 scene.add(shadowPlane);
 
-const frustumSize = 12;
+const frustumSize = 13;
 const aspect = sizes.width / sizes.height;
 const camera = new THREE.OrthographicCamera(
     -aspect * frustumSize,
@@ -193,9 +242,9 @@ const camera = new THREE.OrthographicCamera(
     1000
 );
 
-camera.position.x = -130;
-camera.position.y = 70;
-camera.position.z = 90;
+camera.position.x = -110;
+camera.position.y = 50;
+camera.position.z = 115;
 
 const controls = new OrbitControls( camera, canvas );
 controls.enableDamping = true;
@@ -232,6 +281,10 @@ function onPointerMove(event) {
 }
 
 function moveCaiman(targetPosition, targetRotation) {
+    if (isCaimanCollision(targetPosition)) {
+        return;
+    }
+
     caiman.isMoving = true;
 
     const t1 = gsap.timeline({
@@ -319,6 +372,21 @@ function startDemonJump(mesh) {
     doJump();
 }
 
+function isCaimanCollision(targetPosition) {
+    if (!caiman.instance) return false;
+
+    const origin = caiman.instance.position.clone();
+    origin.y += 1;
+
+    const direction = targetPosition.clone().sub(caiman.instance.position).normalize();
+    const maxDistance = caiman.instance.position.distanceTo(targetPosition) + 0.2;
+
+    moveRaycaster.set(origin, direction);
+    const intersects = moveRaycaster.intersectObjects(collisionObjects, true);
+
+    return intersects.some((hit) => hit.distance <= maxDistance);
+}
+
 function onKeyDown(event) {
     if (caiman.isMoving) return;
 
@@ -373,9 +441,15 @@ function animate() {
     }
 
     for ( let i = 0; i < intersects.length; i++ ) {
-
         intersectObject = intersects[0].object.parent.name;
     }
+
+    if (caiman.instance) {
+        camera.position.x = caiman.instance.position.x + cameraFollowOffset.x;
+        camera.position.z = caiman.instance.position.z + cameraFollowOffset.z;
+        controls.target.set(caiman.instance.position.x, 0, caiman.instance.position.z);
+    }
+
     controls.update();
     renderer.render(scene, camera);
 }
