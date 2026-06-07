@@ -8,6 +8,12 @@ const sizes ={
     width: window.innerWidth,
     height: window.innerHeight
 }
+
+let caiman = {
+    instance: null,
+    moveDistance: 2,
+};
+
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
 const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
@@ -75,9 +81,9 @@ const intersectObjectsNames = [
     "Proyects",
     "WildLance"
 ];
+
 loader.load( './Portafolio.glb', function ( gltf ) {
     gltf.scene.traverse((child) => {
-        
         if (intersectObjectsNames.includes(child.name)) {
             intersectObjects.push(child);
         }
@@ -86,10 +92,15 @@ loader.load( './Portafolio.glb', function ( gltf ) {
             child.castShadow = true;
             child.receiveShadow = true;
         }
-        //console.log(child);
+
+        if (child.name === "Caiman") {
+            caiman.instance = child;
+        }
+        console.log(child);
     });
 
     scene.add( gltf.scene );
+
 
 }, undefined, function ( error ) {
 
@@ -123,7 +134,7 @@ shadowPlane.position.y = 0;
 shadowPlane.receiveShadow = true;
 scene.add(shadowPlane);
 
-const frustumSize = 10;
+const frustumSize = 12;
 const aspect = sizes.width / sizes.height;
 const camera = new THREE.OrthographicCamera(
     -aspect * frustumSize,
@@ -135,8 +146,8 @@ const camera = new THREE.OrthographicCamera(
 );
 
 camera.position.x = -125;
-camera.position.y = 70;
-camera.position.z = 130;
+camera.position.y = 60;
+camera.position.z = 100;
 
 const controls = new OrbitControls( camera, canvas );
 controls.enableDamping = true;
@@ -172,11 +183,32 @@ function onPointerMove(event) {
     pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;   
 }
 
+function onKeyDown(event) {
+    switch (event.key.toLowerCase()) {
+    case "w":
+    case "arrowup":
+        caiman.instance.position.z -= caiman.moveDistance;
+        break;
+    case "s":
+    case "arrowdown":
+        caiman.instance.position.z += caiman.moveDistance;
+        break;
+    case "a":
+    case "arrowleft":
+        caiman.instance.position.x -= caiman.moveDistance;
+        break;
+    case "d":
+    case "arrowright":
+        caiman.instance.position.x += caiman.moveDistance;
+        break;
+    }
+}
+
 modalExitButton.addEventListener("click", hideModal);
 window.addEventListener( 'resize', onWindowResize );
 window.addEventListener( 'click', onClick );
 window.addEventListener( 'pointermove', onPointerMove );
-
+window.addEventListener( 'keydown', onKeyDown );
 
 function animate() {
 
