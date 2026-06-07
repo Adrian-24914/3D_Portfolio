@@ -61,3 +61,7 @@ html, body {
     flex-direction: row;
     justify-content: space-between;
 }
+
+.modal-project-desc{
+    white-space: pre-line;
+}

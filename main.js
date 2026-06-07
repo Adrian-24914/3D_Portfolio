@@ -40,21 +40,21 @@ renderer.toneMappingExposure = 1.2;
 const modalContent= {
     "AboutMe": {
         title: "About Me",
-        content: "I love weird / unique animes, like Dorohedoro (This site its based on it!). I also enjoy playing a diverse range of videogames, from yout typical shoters to more unique and artistic indie games. I really want to work in the gaming industry, at least have some personal proyects to publish and share with the world."
+        content: "I love weird animes, or the ones that have a unique artstyle, like Dorohedoro (This site its based on it!). \n\nI also enjoy playing a diverse range of videogames, from yout typical shooters to more unique and artistic indie games. I've been digin too much into Balatro latetly... \n\nI really want to work in the gaming industry, at least have some personal proyects to publish and share with the world, who knows, maybe my friends would like them)? "
     },
     "Socials": {
         title: "Socials",
-        content: "LinkedIn: Adrian Penagos",
+        content: "LinkedIn: Adrian Penagos\n\n Yeahh... There's not much here",
         link: "https://www.linkedin.com/in/adrian-penagos-b702bb3b3/"
     },
     "Proyects": {
         title: "Projects",
-        content: "You can check most of my projects on my GitHub! I have developed a REST API in Go and PostgreSQL, an Android task manager app with Kotlin and Jetpack Compose, and C++ projects focused on thread synchronization and performance analysis. I also work with React, TypeScript, and modern web technologies.",
+        content: "You can check most of my projects on my GitHub! \nI have developed a REST API in Go and PostgreSQL, an Android task manager app with Kotlin and Jetpack Compose, and C++ projects focused on thread synchronization and performance analysis. I also work with React, TypeScript, and modern web technologies. \n\nSkills\nPython · Java · JavaScript · Kotlin · C++ · HTML/CSS \n\n I know there is a typo in the mesh...",
         link: "https://github.com/Adrian-24914"
     },
     "Scene": { 
         title: "Whoa, THAT'S ME!",
-        content: "My Name is Adrian, and I am a Computer Science student at the Univesidad del Valle de Guatemala. I am passionate about programming and game development, and I am eager to learn and grow in this field. I have experience with a variety of programming languages and technologies (explore this world to find out which ones!), and I am always looking for new challenges and opportunities to improve my skills."
+        content: "My Name is Adrian \nI am a Computer Science student at the Univesidad del Valle de Guatemala. I am passionate about programming and game development, and I am eager to learn and grow in this field. \nI have experience with a variety of programming languages and technologies (explore this world to find out which ones!), and I am always looking for new challenges and opportunities to improve my skills. \n\n Remember you can use WASD or the arrow keys to move! \n\nif you get stuck in this text box, cick the statue again"
     }
 };
 
