@@ -25,11 +25,13 @@ const modalContent= {
     },
     "Socials": {
         title: "Socials",
-        content: "Github: Adrian-24914 \nLinkedIn: https://www.linkedin.com/in/adrian-penagos-b702bb3b3/ \nInstagram:adrian_2527_"
+        content: "LinkedIn: Adrian Penagos",
+        link: "https://www.linkedin.com/in/adrian-penagos-b702bb3b3/"
     },
     "Proyects": {
         title: "Projects",
-        content: "You can check most of my projects on my GitHub! I have developed a REST API in Go and PostgreSQL, an Android task manager app with Kotlin and Jetpack Compose, and C++ projects focused on thread synchronization and performance analysis. I also work with React, TypeScript, and modern web technologies."
+        content: "You can check most of my projects on my GitHub! I have developed a REST API in Go and PostgreSQL, an Android task manager app with Kotlin and Jetpack Compose, and C++ projects focused on thread synchronization and performance analysis. I also work with React, TypeScript, and modern web technologies.",
+        link: "https://github.com/Adrian-24914"
     },
     "Scene": { 
         title: "Whoa, THAT'S ME!",
@@ -41,12 +43,19 @@ const modal = document.querySelector(".modal");
 const modalTitle = document.querySelector(".modal-title");
 const modalProjectDescription = document.querySelector(".modal-project-desc");
 const modalExitButton = document.querySelector(".modal-exit");
+const modalVisitButton = document.querySelector(".modal-visit");
 
 function showModal(id){
     const content = modalContent[id];
     if (content) {
         modalTitle.textContent = content.title;
         modalProjectDescription.textContent = content.content;
+        if (content){
+            modalVisitButton.href = content.link;
+            modalVisitButton.classList.remove("hidden");
+        } else {
+            modalVisitButton.classList.add("hidden");
+        }
         modal.classList.toggle("hidden");
     }
 }
