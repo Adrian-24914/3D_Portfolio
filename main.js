@@ -12,6 +12,9 @@ const sizes ={
 let caiman = {
     instance: null,
     moveDistance: 2,
+    jumpHeight: 1,
+    isMoving: false,
+    moveDuration: 0.2,
 };
 
 const raycaster = new THREE.Raycaster();
@@ -96,7 +99,7 @@ loader.load( './Portafolio.glb', function ( gltf ) {
         if (child.name === "Caiman") {
             caiman.instance = child;
         }
-        console.log(child);
+        //console.log(child);
     });
 
     scene.add( gltf.scene );
@@ -183,25 +186,63 @@ function onPointerMove(event) {
     pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;   
 }
 
+function moveCaiman(targetPosition, targetRotation) {
+    caiman.isMoving = true;
+
+    const t1 = gsap.timeline({
+        onComplete: () => {
+            caiman.isMoving = false;
+        }
+    });
+
+    t1.to(caiman.instance.position, {
+        x: targetPosition.x,
+        z: targetPosition.z,
+        duration: caiman.moveDuration,
+    });
+
+    t1.to(caiman.instance.rotation, 
+        {
+        y: targetRotation,
+        duration: caiman.moveDuration,
+        },
+        0
+    );
+}
+
 function onKeyDown(event) {
+    if (caiman.isMoving) return;
+
+    const targetPosition = new THREE.Vector3().copy(caiman.instance.position);
+    let targetRotation = 0;
+
     switch (event.key.toLowerCase()) {
     case "w":
     case "arrowup":
-        caiman.instance.position.z -= caiman.moveDistance;
+        targetPosition.z -= caiman.moveDistance;
+        targetRotation = 0;
         break;
     case "s":
     case "arrowdown":
-        caiman.instance.position.z += caiman.moveDistance;
+        targetPosition.z += caiman.moveDistance;
+        targetRotation = Math.PI;
         break;
     case "a":
     case "arrowleft":
-        caiman.instance.position.x -= caiman.moveDistance;
+        targetPosition.x -= caiman.moveDistance;
+        targetRotation = -Math.PI / 2;
         break;
     case "d":
     case "arrowright":
-        caiman.instance.position.x += caiman.moveDistance;
+        targetPosition.x += caiman.moveDistance;
+        targetRotation = Math.PI / 2;
         break;
+    default:
+        return;
+
+    
     }
+    moveCaiman(targetPosition, targetRotation);
 }
 
 modalExitButton.addEventListener("click", hideModal);
