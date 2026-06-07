@@ -248,6 +248,9 @@ camera.position.z = 115;
 
 const controls = new OrbitControls( camera, canvas );
 controls.enableDamping = true;
+controls.enableRotate = false; 
+controls.enableZoom = false;
+controls.enablePan = false;
 controls.update();
 
 renderer.setAnimationLoop( animate );
