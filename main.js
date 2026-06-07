@@ -8,7 +8,8 @@ const sizes ={
     width: window.innerWidth,
     height: window.innerHeight
 }
-
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2();
 const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -19,12 +20,26 @@ renderer.toneMappingExposure = 1.2;
 
 const loader = new GLTFLoader();
 
+let intersectObject = "";
+const intersectObjects = [];
+const intersectObjectsNames = [
+    "AboutMe",
+    "Socials",
+    "Proyects",
+    "WildLance"
+];
 loader.load( './Portafolio.glb', function ( gltf ) {
     gltf.scene.traverse((child) => {
+        
+        if (intersectObjectsNames.includes(child.name)) {
+            intersectObjects.push(child);
+        }
+
         if (child.isMesh) {
             child.castShadow = true;
             child.receiveShadow = true;
         }
+        //console.log(child);
     });
 
     scene.add( gltf.scene );
@@ -97,9 +112,36 @@ function onWindowResize() {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 }
 
+function onClick() {
+    console.log(intersectObject);
+}
+
+function onPointerMove(event) {
+    pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+    pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;   
+}
+
 window.addEventListener( 'resize', onWindowResize );
+window.addEventListener( 'click', onClick );
+window.addEventListener( 'pointermove', onPointerMove );
+
 
 function animate() {
+
+    raycaster.setFromCamera( pointer, camera );
+    const intersects = raycaster.intersectObjects( intersectObjects, true );
+
+    if (intersects.length > 0) {
+        document.body.style.cursor = 'pointer';
+    } else {
+        document.body.style.cursor = 'default';
+        intersectObject = "";
+    }
+
+    for ( let i = 0; i < intersects.length; i++ ) {
+
+        intersectObject = intersects[0].object.parent.name;
+    }
 
     controls.update();
     renderer.render(scene, camera);
