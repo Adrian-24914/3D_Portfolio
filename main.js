@@ -11,7 +11,7 @@ const sizes ={
 
 let caiman = {
     instance: null,
-    moveDistance: 2,
+    moveDistance: 3,
     jumpHeight: 1,
     isMoving: false,
     moveDuration: 0.2,
@@ -148,9 +148,9 @@ const camera = new THREE.OrthographicCamera(
     1000
 );
 
-camera.position.x = -125;
-camera.position.y = 60;
-camera.position.z = 100;
+camera.position.x = -130;
+camera.position.y = 70;
+camera.position.z = 90;
 
 const controls = new OrbitControls( camera, canvas );
 controls.enableDamping = true;
@@ -208,6 +208,16 @@ function moveCaiman(targetPosition, targetRotation) {
         },
         0
     );
+
+    t1.to(caiman.instance.position, 
+        {
+        y: caiman.instance.position.y + caiman.jumpHeight,
+        duration: caiman.moveDuration/2,
+        yoyo: true,
+        repeat: 1,
+        },
+        0
+    );
 }
 
 function onKeyDown(event) {
@@ -217,23 +227,23 @@ function onKeyDown(event) {
     let targetRotation = 0;
 
     switch (event.key.toLowerCase()) {
-    case "w":
-    case "arrowup":
+    case "a":
+    case "arrowleft":
         targetPosition.z -= caiman.moveDistance;
         targetRotation = 0;
         break;
-    case "s":
-    case "arrowdown":
+    case "d":
+    case "arrowright":
         targetPosition.z += caiman.moveDistance;
         targetRotation = Math.PI;
         break;
-    case "a":
-    case "arrowleft":
+    case "s":
+    case "arrowdown":
         targetPosition.x -= caiman.moveDistance;
         targetRotation = -Math.PI / 2;
         break;
-    case "d":
-    case "arrowright":
+    case "w":
+    case "arrowup":
         targetPosition.x += caiman.moveDistance;
         targetRotation = Math.PI / 2;
         break;
@@ -267,7 +277,6 @@ function animate() {
 
         intersectObject = intersects[0].object.parent.name;
     }
-
     controls.update();
     renderer.render(scene, camera);
 }
