@@ -50,10 +50,11 @@ function showModal(id){
     if (content) {
         modalTitle.textContent = content.title;
         modalProjectDescription.textContent = content.content;
-        if (content){
+        if (content.link) {
             modalVisitButton.href = content.link;
             modalVisitButton.classList.remove("hidden");
         } else {
+            modalVisitButton.removeAttribute("href");
             modalVisitButton.classList.add("hidden");
         }
         modal.classList.toggle("hidden");
