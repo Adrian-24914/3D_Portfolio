@@ -17,6 +17,13 @@ let caiman = {
     moveDuration: 0.2,
 };
 
+const jumpConfig = {
+    height: 1,       
+    duration: 0.35,     
+    minDelay: 0.4,     
+    maxDelay: 1.5,     
+};
+
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
 const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
@@ -85,6 +92,10 @@ const intersectObjectsNames = [
     "WildLance"
 ];
 
+const jumpingChars = []; 
+const jumpingTimers = []; 
+let demonMesh = null; 
+
 loader.load( './Portafolio.glb', function ( gltf ) {
     gltf.scene.traverse((child) => {
         if (intersectObjectsNames.includes(child.name)) {
@@ -99,11 +110,20 @@ loader.load( './Portafolio.glb', function ( gltf ) {
         if (child.name === "Caiman") {
             caiman.instance = child;
         }
+
+        const isChar = /^Char(\d{3})?$/.test(child.name);
+        if (isChar && child.isMesh) {
+            jumpingChars.push(child);
+        }
+        if (child.name === "Demon" && child.isMesh) {
+            demonMesh = child;
+        }
         //console.log(child);
     });
 
     scene.add( gltf.scene );
 
+    jumpingChars.forEach(startJumpLoop);
 
 }, undefined, function ( error ) {
 
@@ -218,6 +238,30 @@ function moveCaiman(targetPosition, targetRotation) {
         },
         0
     );
+}
+
+function startJumpLoop(mesh) {
+    const baseY = mesh.position.y;
+
+    function doJump() {
+        gsap.to(mesh.position, {
+            y: baseY + jumpConfig.height,
+            duration: jumpConfig.duration / 2,
+            ease: "power1.out",
+            yoyo: true,
+            repeat: 1,
+            onComplete: scheduleNext,
+        });
+    }
+
+    function scheduleNext() {
+        const delay = jumpConfig.minDelay +
+            Math.random() * (jumpConfig.maxDelay - jumpConfig.minDelay);
+        gsap.delayedCall(delay, doJump);
+    }
+
+    const initialDelay = Math.random() * jumpConfig.maxDelay;
+    gsap.delayedCall(initialDelay, doJump);
 }
 
 function onKeyDown(event) {
