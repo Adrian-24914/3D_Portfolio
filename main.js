@@ -150,6 +150,26 @@ sun.shadow.bias = -0.0005;
 sun.shadow.normalBias = 0.05;
 scene.add(sun);
 
+const discoColors = [0x9B59B6, 0x2ECC71, 0xF1C40F, 0xE74C3C];
+const discoConfig = { interval: 0.5 };
+
+let discoIndex = 0;
+function discoTick() {
+    const color = discoColors[discoIndex % discoColors.length];
+    gsap.to(sun.color, {
+        r: ((color >> 16) & 255) / 255,
+        g: ((color >> 8) & 255) / 255,
+        b: (color & 255) / 255,
+        duration: discoConfig.interval * 0.6,
+        ease: "power1.inOut",
+        onComplete: () => {
+            discoIndex++;
+            gsap.delayedCall(discoConfig.interval, discoTick);
+        }
+    });
+}
+discoTick();
+
 const light = new THREE.AmbientLight(0x404040, 2.5);
 scene.add(light);
 
