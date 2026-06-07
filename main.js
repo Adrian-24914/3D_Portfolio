@@ -21,7 +21,7 @@ const jumpConfig = {
     height: 1,       
     duration: 0.35,     
     minDelay: 0.4,     
-    maxDelay: 1.5,     
+    maxDelay: 0.75,     
 };
 
 const raycaster = new THREE.Raycaster();
@@ -115,7 +115,7 @@ loader.load( './Portafolio.glb', function ( gltf ) {
         if (isChar && child.isMesh) {
             jumpingChars.push(child);
         }
-        if (child.name === "Demon" && child.isMesh) {
+        if (child.name === "Demon") {
             demonMesh = child;
         }
         //console.log(child);
@@ -123,11 +123,16 @@ loader.load( './Portafolio.glb', function ( gltf ) {
 
     scene.add( gltf.scene );
 
-    jumpingChars.forEach(startJumpLoop);
+    jumpingChars.forEach((mesh) => {
+    applyRandomColor(mesh);
+    startJumpLoop(mesh);
+    });
 
-}, undefined, function ( error ) {
+    if (demonMesh) startDemonJump(demonMesh);
 
-  console.error( error );
+    }, undefined, function ( error ) {
+
+    console.error( error );
 
 } );
 
@@ -262,6 +267,36 @@ function startJumpLoop(mesh) {
 
     const initialDelay = Math.random() * jumpConfig.maxDelay;
     gsap.delayedCall(initialDelay, doJump);
+}
+
+const charColors = [0x9B59B6, 0x2ECC71, 0xF1C40F, 0xE74C3C]; 
+
+function applyRandomColor(mesh) {
+    const color = charColors[Math.floor(Math.random() * charColors.length)];
+    if (mesh.material) {
+        mesh.material = mesh.material.clone();
+        mesh.material.color.setHex(color);
+    }
+}
+
+const demonJumpConfig = {
+    height: 1.5,      
+    duration: 0.6,    
+};
+
+function startDemonJump(mesh) {
+    const baseY = mesh.position.y;
+    function doJump() {
+        gsap.to(mesh.position, {
+            y: baseY + demonJumpConfig.height,
+            duration: demonJumpConfig.duration / 2,
+            ease: "power1.out",
+            yoyo: true,
+            repeat: 1,
+            onComplete: doJump,
+        });
+    }
+    doJump();
 }
 
 function onKeyDown(event) {
